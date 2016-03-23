@@ -47,9 +47,13 @@ download_data <- function() {
 
 read_date <- function(){
     flog.info("reading summary into global variable NEI")
-    NEI <<- readRDS("data/summarySCC_PM25.rds")
+    if(!exists("NEI")){
+        NEI <<- readRDS("data/summarySCC_PM25.rds")
+    }
     flog.info("reading class code into global variable SCC")
-    SCC <<- readRDS("data/Source_Classification_Code.rds")
+    if(!exists("SCC")){
+        SCC <<- readRDS("data/Source_Classification_Code.rds")
+    }
 }
 
 #download the required data
