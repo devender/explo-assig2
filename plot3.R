@@ -15,11 +15,15 @@ if("dplyr" %in% rownames(installed.packages()) == FALSE) {
 if("lubridate" %in% rownames(installed.packages()) == FALSE) {
     install.packages("lubridate")
 }
+if("ggplot2" %in% rownames(installed.packages()) == FALSE) {
+    install.packages("ggplot2")
+}
 
 library(futile.logger)
 library(data.table)
 library(dplyr)
 library(lubridate)
+library(ggplot2)
 
 download_data <- function() {
     if(!file.exists("data")) { 
@@ -66,9 +70,10 @@ baltimore <- NEI %>% filter(fips == "24510")
 baltimore <- transform(baltimore, type = factor(type))
 baltimore_by_year_and_type<-baltimore %>% group_by(year,type) %>% summarise(Emissions.Tons=sum(Emissions))
 
+png(file = "plot3.png")
 #plot
 #set up graphics device and plot
-qplot(x=year,y=Emissions.Tons,data=baltimore_by_year_and_type,color=type,geom="line") +
+p<-qplot(x=year,y=Emissions.Tons,data=baltimore_by_year_and_type,color=type,geom="line") +
     ggtitle("Baltimore City Emission by Source and Year")
-ggsave("plot3.png")
-unlink("plot2.png")
+print(p)
+dev.off()
