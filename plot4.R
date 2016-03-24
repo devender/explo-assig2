@@ -55,8 +55,8 @@ read_date <- function(){
         NEI <<- readRDS("data/summarySCC_PM25.rds")
     }
     flog.info("reading class code into global variable SCC")
-    if(!exists("SCC")){
-        SCC <<- readRDS("data/Source_Classification_Code.rds")
+    if(!exists("CODES")){
+        CODES <<- readRDS("data/Source_Classification_Code.rds")
     }
 }
 
@@ -67,21 +67,21 @@ download_data()
 read_date()
 
 #extract "emissions from coal combustion-related sources"
-coal_comb_codes<-SCC %>% 
+coal_comb_codes<-CODES %>% 
     filter( grepl(".*[C|c]omb.*[C|c]oal.*",Short.Name)) %>% 
-    select(SCC)
+    .$SCC
 
 #only extract where the source is one of coal comb
-only_from_coal<-inner_join(NEI, coal_comb_codes, by=c("SCC"="SCC"))
-
-only_from_coal_by_year <- only_from_coal %>% 
-                            group_by(year) %>% 
-                            summarise(Emissions.Tons=log10(sum(Emissions)))
+only_from_coal_by_year <-NEI %>% 
+        mutate(SCC <-factor(SCC))%>% 
+        filter(SCC %in% coal_comb_codes) %>%
+        group_by(year) %>% 
+        summarise(Emissions.Tons=sum(Emissions))
 
 png(file = "plot4.png")
 
 p<-qplot(year,Emissions.Tons,data=only_from_coal_by_year,geom="line",
-         ylab="Log10(Emissions)") +
+         ylab="Emissions") +
     ggtitle("US emissions from coal combustion-related sources from 1999–2008")
 
 print(p)

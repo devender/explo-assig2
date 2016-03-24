@@ -54,10 +54,6 @@ read_date <- function(){
     if(!exists("NEI")){
         NEI <<- readRDS("data/summarySCC_PM25.rds")
     }
-    flog.info("reading class code into global variable SCC")
-    if(!exists("SCC")){
-        SCC <<- readRDS("data/Source_Classification_Code.rds")
-    }
 }
 
 #download the required data
